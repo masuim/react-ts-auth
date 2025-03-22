@@ -3,9 +3,10 @@ import {
   useContext,
   useState,
   ReactNode,
+  use,
   useTransition,
-  useEffect,
 } from "react";
+import { useFormStatus } from "react-dom";
 import { mockAuthApi, mockLogoutApi } from "@/mocks/api/auth";
 import { User } from "@/mocks/data/users";
 import { cookieUtil } from "@/lib/cookie";
@@ -25,27 +26,27 @@ const AuthContext = createContext<AuthContextType | null>(null);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [user, setUser] = useState<Omit<User, "password"> | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
+  const { pending: isLoading } = useFormStatus();
   const [isPending, startTransition] = useTransition();
 
-  useEffect(() => {
+  const authPromise = new Promise<Omit<User, "password"> | null>((resolve) => {
     verifyAuthToken(
       (userData) => {
         startTransition(() => {
           setUser(userData);
         });
-        setIsLoading(false);
+        resolve(userData);
       },
       (error) => {
         console.error("Auth verification failed:", error);
-        setIsLoading(false);
+        resolve(null);
       }
     );
-  }, []);
+  });
+  use(authPromise);
 
   const login = async (data: LoginInput) => {
     const validatedData = loginSchema.parse(data);
-    setIsLoading(true);
     return new Promise<void>((resolve, reject) => {
       mockAuthApi(
         validatedData,
@@ -54,12 +55,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             setUser(response.user);
           });
           cookieUtil.setAuthToken(response.token);
-          setIsLoading(false);
           resolve();
         },
         (error) => {
           console.error("Login error:", error);
-          setIsLoading(false);
           reject(error);
         }
       );
@@ -67,7 +66,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const logout = async () => {
-    setIsLoading(true);
     return new Promise<void>((resolve, reject) => {
       mockLogoutApi(
         () => {
@@ -75,12 +73,10 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
             setUser(null);
           });
           cookieUtil.removeAuthToken();
-          setIsLoading(false);
           resolve();
         },
         (error) => {
           console.error("Logout error:", error);
-          setIsLoading(false);
           reject(error);
         }
       );

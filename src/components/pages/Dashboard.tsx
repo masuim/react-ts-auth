@@ -1,25 +1,28 @@
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useFormState } from "react-dom";
 import { useAuth } from "@/features/auth/AuthContext";
 import { UserProfile } from "@/components/molecules/user/UserProfile";
 import { ErrorBoundary } from "@/components/error-boundary";
 
+const initialState = { error: null };
+
 export default function Dashboard() {
   const navigate = useNavigate();
   const { logout, user, isPending } = useAuth();
-  const [isLoading, setIsLoading] = useState(false);
 
-  const handleLogout = async () => {
-    setIsLoading(true);
+  const [state, formAction] = useFormState(async () => {
     try {
       await logout();
       navigate("/login");
+      return { error: null };
     } catch (error) {
       console.error("Logout failed:", error);
-    } finally {
-      setIsLoading(false);
+      return {
+        error:
+          error instanceof Error ? error.message : "ログアウトに失敗しました",
+      };
     }
-  };
+  }, initialState);
 
   return (
     <div className="container mx-auto p-4">
@@ -28,10 +31,12 @@ export default function Dashboard() {
         <ErrorBoundary>
           <UserProfile
             user={user}
-            onLogout={handleLogout}
-            isLoading={isLoading}
+            onLogout={formAction}
             isPending={isPending}
           />
+          {state.error && (
+            <p className="mt-2 text-sm text-red-500">{state.error}</p>
+          )}
         </ErrorBoundary>
       </div>
     </div>

@@ -11,7 +11,7 @@ interface AuthFormProps {
   title: string;
   description: string;
   children: ReactNode;
-  onSubmit?: (e: React.FormEvent) => void;
+  onSubmit: (formData: FormData) => void;
 }
 
 export function AuthForm({
@@ -28,7 +28,7 @@ export function AuthForm({
           <CardDescription>{description}</CardDescription>
         </CardHeader>
         <CardContent>
-          <form className="space-y-4" onSubmit={onSubmit}>
+          <form className="space-y-4" action={onSubmit}>
             {children}
           </form>
         </CardContent>

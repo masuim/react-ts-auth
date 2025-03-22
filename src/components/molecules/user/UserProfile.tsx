@@ -1,5 +1,6 @@
 import { User } from "@/mocks/data/users";
 import { Button } from "@/components/atoms/button";
+import { useFormStatus } from "react-dom";
 import {
   Card,
   CardHeader,
@@ -11,20 +12,17 @@ import {
 
 function LogoutButton({
   onClick,
-  isLoading,
   isPending,
 }: {
   onClick: () => void;
-  isLoading?: boolean;
   isPending?: boolean;
 }) {
+  const { pending } = useFormStatus();
+  const isLoading = pending || isPending;
+
   return (
-    <Button
-      variant="outline"
-      onClick={onClick}
-      disabled={isLoading || isPending}
-    >
-      {isLoading || isPending ? "ログアウト中..." : "ログアウト"}
+    <Button variant="outline" onClick={onClick} disabled={isLoading}>
+      {isLoading ? "ログアウト中..." : "ログアウト"}
     </Button>
   );
 }
@@ -32,25 +30,11 @@ function LogoutButton({
 interface UserProfileProps {
   user: Omit<User, "password"> | null;
   onLogout: () => void;
-  isLoading?: boolean;
   isPending?: boolean;
 }
 
-export function UserProfile({
-  user,
-  onLogout,
-  isLoading,
-  isPending,
-}: UserProfileProps) {
-  if (!user) {
-    return (
-      <Card>
-        <CardContent className="p-6">
-          <p className="text-gray-500">ユーザー情報が見つかりません</p>
-        </CardContent>
-      </Card>
-    );
-  }
+export function UserProfile({ user, onLogout, isPending }: UserProfileProps) {
+  if (!user) return null;
 
   return (
     <Card>
@@ -59,27 +43,25 @@ export function UserProfile({
         <CardDescription>ユーザー情報</CardDescription>
       </CardHeader>
       <CardContent>
-        <div className="space-y-2">
+        <dl className="space-y-2">
           <div>
-            <p className="text-sm text-gray-500">名前</p>
-            <p className="font-medium">{user.name}</p>
+            <dt className="text-sm font-medium text-muted-foreground">名前</dt>
+            <dd>{user.name}</dd>
           </div>
           <div>
-            <p className="text-sm text-gray-500">メールアドレス</p>
-            <p className="font-medium">{user.email}</p>
+            <dt className="text-sm font-medium text-muted-foreground">
+              メールアドレス
+            </dt>
+            <dd>{user.email}</dd>
           </div>
           <div>
-            <p className="text-sm text-gray-500">ロール</p>
-            <p className="font-medium">{user.role}</p>
+            <dt className="text-sm font-medium text-muted-foreground">権限</dt>
+            <dd>{user.role === "admin" ? "管理者" : "一般ユーザー"}</dd>
           </div>
-        </div>
+        </dl>
       </CardContent>
       <CardFooter>
-        <LogoutButton
-          onClick={onLogout}
-          isLoading={isLoading}
-          isPending={isPending}
-        />
+        <LogoutButton onClick={onLogout} isPending={isPending} />
       </CardFooter>
     </Card>
   );
