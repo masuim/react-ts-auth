@@ -1,6 +1,6 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
 import Home from "./components/pages/Home";
-import Login from "./components/pages/Login";
+
 import Dashboard from "./components/pages/Dashboard";
 import { AuthProvider } from "./features/auth/AuthContext";
 import { RouteGuard } from "./features/auth/RouteGuard";
@@ -9,6 +9,7 @@ import {
   PUBLIC_ONLY_ROUTES,
   PUBLIC_ROUTES,
 } from "./features/auth/routes";
+import { Login } from "@/components/pages/Login";
 
 function App() {
   return (
