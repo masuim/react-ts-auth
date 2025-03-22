@@ -6,24 +6,24 @@
 
 ### フロントエンド
 
-- React 18
+- React 19
 - TypeScript
-- Tailwind CSS v3.4.1 (※)
-- shadcn/ui (UI コンポーネントライブラリ)
+- Tailwind CSS v4.0
 - React Router DOM (ルーティング)
 - Zod (バリデーション)
 - Universal Cookie (Cookie 管理)
-
-※ Tailwind CSS のバージョンについて：
-
-- 最新の v4 ではなく、v3.4.1 を使用しています
-- これは、shadcn/ui が Tailwind CSS v3 系に最適化されているためです
-- 将来的なアップグレードは、shadcn/ui の Tailwind CSS v4 対応を確認してから検討します
+- Lucide React (アイコン)
 
 ### アーキテクチャ
 
 - Atomic Design
+  - atoms: 最小単位のコンポーネント（Button, Input, Label など）
+  - molecules: 複数の atoms で構成（AuthInput, SubmitButton など）
+  - organisms: 複数の molecules で構成（AuthForm など）
+  - templates: ページレイアウトのテンプレート
+  - pages: ページコンポーネント
 - ディレクトリベースのコンポーネント設計
+- コールバックベースの非同期処理
 
 ## プロジェクト構成
 
@@ -56,33 +56,17 @@ npm install
 2. Tailwind CSS のインストールと設定
 
 ```bash
-# 特定のバージョンを指定してインストール
-npm install -D tailwindcss@3.4.1 postcss autoprefixer
+npm install -D tailwindcss postcss autoprefixer
 npx tailwindcss init -p
 ```
 
-3. shadcn/ui のセットアップ
+3. その他の必要なパッケージのインストール
 
 ```bash
-npx shadcn@latest init
+npm install @hookform/resolvers universal-cookie zod react-router-dom lucide-react
 ```
 
-shadcn/ui の設定オプション：
-
-- スタイル: New York
-  - より洗練された見た目とプロフェッショナルな印象を与えるデザイン
-  - デフォルトのスタイルよりもエンタープライズ向けの UI に適している
-- カラーテーマ: Neutral
-  - ビジネスアプリケーションに適した落ち着いた色調
-  - カスタマイズの余地を残しつつ、基本的なデザインシステムとして機能
-
-4. その他の必要なパッケージのインストール
-
-```bash
-npm install @hookform/resolvers universal-cookie zod react-router-dom
-```
-
-5. 開発サーバーの起動
+4. 開発サーバーの起動
 
 ```bash
 npm run dev
@@ -93,9 +77,10 @@ npm run dev
 ### 認証機能
 
 - ログインページ
-  - フォームバリデーション（Zod）
+  - Zod によるフォームバリデーション
   - エラーハンドリング
   - トークンベースの認証
+  - パスワード表示/非表示切り替え
 
 ### ダッシュボード
 
@@ -110,20 +95,19 @@ npm run dev
 - Atomic Design の原則に従う
 - 再利用可能なコンポーネントの作成
 - Props 型の明示的な定義
+- React 19 の新機能を活用した実装
 
 ### スタイリング
 
 - Tailwind CSS のユーティリティクラスを使用
-- shadcn/ui コンポーネントのカスタマイズ
-  - 必要に応じてコンポーネントの追加: `npx shadcn-ui@latest add [component-name]`
-  - カスタマイズは`src/components/ui`ディレクトリ内で管理
+- モバイルファーストのレスポンシブデザイン
+- アクセシビリティに配慮した UI 実装
 
 ### 状態管理
 
-// TODO: 開発開始時の状態を記載しているため、今後ライブラリ使用時など随時変更が必要になります。
-
 - ローカルステート: React useState
-- グローバルステート: 必要に応じて追加
+- コンテキスト: React Context API
+- フォーム管理: React Hook Form
 
 ## ライセンス
 
