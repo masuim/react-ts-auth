@@ -1,17 +1,9 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-
-import { useAuth } from "@/features/auth/AuthContext";
 import { Button } from "@/components/atoms/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/atoms/card";
-import { Label } from "@/components/atoms/label";
-import { Input } from "@/components/atoms/input";
+import { AuthInput } from "@/components/molecules/auth/AuthInput";
+import { AuthForm } from "@/components/organisms/auth/AuthForm";
+import { useAuth } from "@/features/auth/AuthContext";
 
 export default function Login() {
   const navigate = useNavigate();
@@ -30,41 +22,31 @@ export default function Login() {
   };
 
   return (
-    <div className="flex min-h-screen items-center justify-center p-4">
-      <Card className="w-full max-w-md">
-        <CardHeader>
-          <CardTitle>ログイン</CardTitle>
-          <CardDescription>アカウントにログインしてください</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <form className="space-y-4" onSubmit={handleSubmit}>
-            <div className="space-y-2">
-              <Label htmlFor="email">メールアドレス</Label>
-              <Input
-                id="email"
-                type="email"
-                placeholder="example@example.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="password">パスワード</Label>
-              <Input
-                id="password"
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-              />
-            </div>
-            <Button className="w-full" type="submit">
-              ログイン
-            </Button>
-          </form>
-        </CardContent>
-      </Card>
-    </div>
+    <AuthForm
+      title="ログイン"
+      description="アカウントにログインしてください"
+      onSubmit={handleSubmit}
+    >
+      <AuthInput
+        id="email"
+        label="メールアドレス"
+        type="email"
+        placeholder="example@example.com"
+        value={email}
+        onChange={(e) => setEmail(e.target.value)}
+        required
+      />
+      <AuthInput
+        id="password"
+        label="パスワード"
+        type="password"
+        value={password}
+        onChange={(e) => setPassword(e.target.value)}
+        required
+      />
+      <Button className="w-full" type="submit">
+        ログイン
+      </Button>
+    </AuthForm>
   );
 }
