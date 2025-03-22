@@ -10,13 +10,14 @@ import { mockAuthApi, mockLogoutApi } from "@/mocks/api/auth";
 import { User } from "@/mocks/data/users";
 import { cookieUtil } from "@/lib/cookie";
 import { verifyAuthToken } from "./auth-utils";
+import { loginSchema, type LoginInput } from "./auth-validation";
 
 interface AuthContextType {
   user: Omit<User, "password"> | null;
   isAuthenticated: boolean;
   isLoading: boolean;
   isPending: boolean;
-  login: (email: string, password: string) => Promise<void>;
+  login: (data: LoginInput) => Promise<void>;
   logout: () => Promise<void>;
 }
 
@@ -42,11 +43,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     );
   }, []);
 
-  const login = async (email: string, password: string) => {
+  const login = async (data: LoginInput) => {
+    const validatedData = loginSchema.parse(data);
     setIsLoading(true);
     return new Promise<void>((resolve, reject) => {
       mockAuthApi(
-        { email, password },
+        validatedData,
         (response) => {
           startTransition(() => {
             setUser(response.user);

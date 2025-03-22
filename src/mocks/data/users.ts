@@ -1,8 +1,9 @@
 export interface User {
   id: string;
   email: string;
+  password: string;
   name: string;
-  role: "user" | "admin";
+  role: "admin" | "user";
 }
 
 export interface UserCredentials {
@@ -10,19 +11,19 @@ export interface UserCredentials {
   password: string;
 }
 
-export const MOCK_USERS: (User & { password: string })[] = [
+export const MOCK_USERS: User[] = [
   {
     id: "1",
-    email: "test@example.com",
-    password: "password123",
-    name: "テストユーザー",
-    role: "user",
+    email: "admin@example.com",
+    password: "Admin123456",
+    name: "管理者",
+    role: "admin",
   },
   {
     id: "2",
-    email: "admin@example.com",
-    password: "admin123",
-    name: "管理者",
-    role: "admin",
+    email: "user@example.com",
+    password: "User123456",
+    name: "一般ユーザー",
+    role: "user",
   },
 ];
