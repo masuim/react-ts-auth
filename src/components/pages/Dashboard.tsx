@@ -6,7 +6,7 @@ import { ErrorBoundary } from "@/components/error-boundary";
 
 export default function Dashboard() {
   const navigate = useNavigate();
-  const { logout, user } = useAuth();
+  const { logout, user, isPending } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
 
   const handleLogout = async () => {
@@ -30,6 +30,7 @@ export default function Dashboard() {
             user={user}
             onLogout={handleLogout}
             isLoading={isLoading}
+            isPending={isPending}
           />
         </ErrorBoundary>
       </div>

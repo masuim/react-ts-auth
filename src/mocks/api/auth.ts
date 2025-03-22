@@ -1,11 +1,5 @@
 import { User, UserCredentials, MOCK_USERS } from "../data/users";
 
-interface AuthResponse {
-  user: Omit<User, "password">;
-  token: string;
-}
-
-// TODO: 認証エラーの定義 他の記法にした方がわかりやすいのでは?
 export class AuthError extends Error {
   constructor(message: string) {
     super(message);
@@ -13,56 +7,87 @@ export class AuthError extends Error {
   }
 }
 
-export async function mockAuthApi(
-  credentials: UserCredentials
-): Promise<AuthResponse> {
-  // 実際のAPIの動作をシミュレートするための遅延
-  await new Promise((resolve) => setTimeout(resolve, 1000));
+type AuthCallback<T> = (result: T) => void;
+type ErrorCallback = (error: Error) => void;
 
-  const user = MOCK_USERS.find((u) => u.email === credentials.email);
-
-  if (!user || user.password !== credentials.password) {
-    throw new AuthError("メールアドレスまたはパスワードが正しくありません");
-  }
-
-  const userWithoutPassword: Omit<User, "password"> = {
-    id: user.id,
-    email: user.email,
-    name: user.name,
-    role: user.role,
-  };
-
-  return {
-    user: userWithoutPassword,
-    token: `mock-jwt-token-${user.id}-${Date.now()}`,
-  };
+interface AuthResponse {
+  user: Omit<User, "password">;
+  token: string;
 }
 
-export async function mockLogoutApi(): Promise<void> {
-  await new Promise((resolve) => setTimeout(resolve, 500));
-}
+export const mockAuthApi = (
+  credentials: UserCredentials,
+  onSuccess: AuthCallback<AuthResponse>,
+  onError: ErrorCallback
+) => {
+  setTimeout(() => {
+    const user = MOCK_USERS.find((u) => u.email === credentials.email);
 
-export async function mockVerifyToken(
-  token: string
-): Promise<Omit<User, "password"> | null> {
-  await new Promise((resolve) => setTimeout(resolve, 500));
+    if (!user || user.password !== credentials.password) {
+      onError(
+        new AuthError("メールアドレスまたはパスワードが正しくありません")
+      );
+      return;
+    }
 
-  if (!token.startsWith("mock-jwt-token-")) {
-    return null;
-  }
+    const userWithoutPassword: Omit<User, "password"> = {
+      id: user.id,
+      email: user.email,
+      name: user.name,
+      role: user.role,
+    };
 
-  const userId = token.split("-")[3];
-  const user = MOCK_USERS.find((u) => u.id === userId);
+    onSuccess({
+      user: userWithoutPassword,
+      token: `mock-jwt-token-${user.id}-${Date.now()}`,
+    });
+  }, 1000);
+};
 
-  if (!user) {
-    return null;
-  }
+export const mockLogoutApi = (
+  onSuccess: () => void,
+  onError?: ErrorCallback
+) => {
+  setTimeout(() => {
+    try {
+      onSuccess();
+    } catch (error) {
+      onError?.(error as Error);
+    }
+  }, 500);
+};
 
-  const userWithoutPassword: Omit<User, "password"> = {
-    id: user.id,
-    email: user.email,
-    name: user.name,
-    role: user.role,
-  };
-  return userWithoutPassword;
-}
+export const mockVerifyToken = (
+  token: string,
+  onSuccess: AuthCallback<Omit<User, "password"> | null>,
+  onError?: ErrorCallback
+) => {
+  setTimeout(() => {
+    try {
+      if (!token.startsWith("mock-jwt-token-")) {
+        onSuccess(null);
+        return;
+      }
+
+      const userId = token.split("-")[3];
+      const user = MOCK_USERS.find((u) => u.id === userId);
+
+      if (!user) {
+        onSuccess(null);
+        return;
+      }
+
+      const userWithoutPassword: Omit<User, "password"> = {
+        id: user.id,
+        email: user.email,
+        name: user.name,
+        role: user.role,
+      };
+
+      onSuccess(userWithoutPassword);
+    } catch (error) {
+      onError?.(error as Error);
+      onSuccess(null);
+    }
+  }, 500);
+};

@@ -12,13 +12,19 @@ import {
 function LogoutButton({
   onClick,
   isLoading,
+  isPending,
 }: {
   onClick: () => void;
   isLoading?: boolean;
+  isPending?: boolean;
 }) {
   return (
-    <Button variant="outline" onClick={onClick} disabled={isLoading}>
-      {isLoading ? "ログアウト中..." : "ログアウト"}
+    <Button
+      variant="outline"
+      onClick={onClick}
+      disabled={isLoading || isPending}
+    >
+      {isLoading || isPending ? "ログアウト中..." : "ログアウト"}
     </Button>
   );
 }
@@ -27,9 +33,15 @@ interface UserProfileProps {
   user: Omit<User, "password"> | null;
   onLogout: () => void;
   isLoading?: boolean;
+  isPending?: boolean;
 }
 
-export function UserProfile({ user, onLogout, isLoading }: UserProfileProps) {
+export function UserProfile({
+  user,
+  onLogout,
+  isLoading,
+  isPending,
+}: UserProfileProps) {
   if (!user) {
     return (
       <Card>
@@ -63,7 +75,11 @@ export function UserProfile({ user, onLogout, isLoading }: UserProfileProps) {
         </div>
       </CardContent>
       <CardFooter>
-        <LogoutButton onClick={onLogout} isLoading={isLoading} />
+        <LogoutButton
+          onClick={onLogout}
+          isLoading={isLoading}
+          isPending={isPending}
+        />
       </CardFooter>
     </Card>
   );
