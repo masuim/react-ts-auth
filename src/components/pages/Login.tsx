@@ -8,10 +8,14 @@ import { SubmitButton } from "@/components/molecules/auth/SubmitButton";
 import { AuthForm } from "@/components/organisms/auth/AuthForm";
 import { AuthInput } from "@/components/molecules/auth/AuthInput";
 
+import { Eye, EyeOff } from "lucide-react";
+import { IconButton } from "@/components/atoms/IconButton";
+
 export const Login = () => {
   const navigate = useNavigate();
   const { login } = useAuth();
   const [error, setError] = useState<string>("");
+  const [showPassword, setShowPassword] = useState(false);
 
   const {
     register,
@@ -31,6 +35,10 @@ export const Login = () => {
     }
   });
 
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
+
   return (
     <AuthForm
       title="ログイン"
@@ -46,13 +54,29 @@ export const Login = () => {
         {...register("email")}
         error={errors.email?.message}
       />
-      <AuthInput
-        id="password"
-        label="パスワード"
-        type="password"
-        {...register("password")}
-        error={errors.password?.message}
-      />
+      <div className="relative">
+        <AuthInput
+          id="password"
+          label="パスワード"
+          type={showPassword ? "text" : "password"}
+          {...register("password")}
+          error={errors.password?.message}
+        />
+        <IconButton
+          type="button"
+          variant="ghost"
+          className="absolute right-2 top-8"
+          onClick={togglePasswordVisibility}
+          aria-label={showPassword ? "パスワードを隠す" : "パスワードを表示"}
+          icon={
+            showPassword ? (
+              <EyeOff className="h-4 w-4" />
+            ) : (
+              <Eye className="h-4 w-4" />
+            )
+          }
+        />
+      </div>
       <SubmitButton className="w-full">ログイン</SubmitButton>
     </AuthForm>
   );
