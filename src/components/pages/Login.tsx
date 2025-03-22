@@ -1,40 +1,41 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { AuthInput } from "@/components/molecules/auth/AuthInput";
-import { AuthForm } from "@/components/organisms/auth/AuthForm";
-import { SubmitButton } from "@/components/molecules/auth/SubmitButton";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { useAuth } from "@/features/auth/AuthContext";
-import { AuthError } from "@/mocks/api/auth";
+import { loginSchema, type LoginInput } from "@/features/auth/auth-validation";
+import { SubmitButton } from "@/components/molecules/auth/SubmitButton";
+import { AuthForm } from "@/components/organisms/auth/AuthForm";
+import { AuthInput } from "@/components/molecules/auth/AuthInput";
 
 export const Login = () => {
   const navigate = useNavigate();
   const { login } = useAuth();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
+  const [error, setError] = useState<string>("");
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError("");
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<LoginInput>({
+    resolver: zodResolver(loginSchema),
+  });
 
+  const onSubmit = handleSubmit(async (data) => {
     try {
-      await login(email, password);
+      setError("");
+      await login(data);
       navigate("/dashboard");
-    } catch (error) {
-      if (error instanceof AuthError) {
-        setError(error.message);
-      } else {
-        setError("ログイン中にエラーが発生しました");
-      }
-      console.error("ログインエラー:", error);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "ログインに失敗しました");
     }
-  };
+  });
 
   return (
     <AuthForm
       title="ログイン"
       description="アカウントにログインしてください"
-      onSubmit={handleSubmit}
+      onSubmit={onSubmit}
     >
       {error && <p className="mb-4 text-sm text-red-500">{error}</p>}
       <AuthInput
@@ -42,19 +43,15 @@ export const Login = () => {
         label="メールアドレス"
         type="email"
         placeholder="example@example.com"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        required
-        error={error ? " " : undefined}
+        {...register("email")}
+        error={errors.email?.message}
       />
       <AuthInput
         id="password"
         label="パスワード"
         type="password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-        required
-        error={error ? " " : undefined}
+        {...register("password")}
+        error={errors.password?.message}
       />
       <SubmitButton className="w-full">ログイン</SubmitButton>
     </AuthForm>
