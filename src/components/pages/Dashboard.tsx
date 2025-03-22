@@ -1,13 +1,14 @@
 import { useNavigate } from "react-router-dom";
-import { Button } from "@/components/ui/button";
+
+import { useAuth } from "@/features/auth/AuthContext";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { useAuth } from "@/features/auth/AuthContext";
+} from "@/components/atoms/card";
+import { Button } from "@/components/atoms/button";
 
 export default function Dashboard() {
   const navigate = useNavigate();

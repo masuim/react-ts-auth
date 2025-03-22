@@ -1,16 +1,17 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { Button } from "@/components/ui/button";
+
+import { useAuth } from "@/features/auth/AuthContext";
+import { Button } from "@/components/atoms/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { useAuth } from "@/features/auth/AuthContext";
+} from "@/components/atoms/card";
+import { Label } from "@/components/atoms/label";
+import { Input } from "@/components/atoms/input";
 
 export default function Login() {
   const navigate = useNavigate();
